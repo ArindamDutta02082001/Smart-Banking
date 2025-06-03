@@ -1,8 +1,8 @@
 <h1>
   <p align="center">
-    <img src="./docs/readme-assets/royal-reserve-bank-logo.png" alt="Royal Reserve Bank" width="300">
+<!--     <img src="./docs/readme-assets/royal-reserve-bank-logo.png" alt="Royal Reserve Bank" width="300"> -->
     </br>
-    Royal Reserve Bank
+    Smart Bank
   </p>
 </h1>
 
