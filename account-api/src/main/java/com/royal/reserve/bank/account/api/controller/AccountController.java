@@ -3,6 +3,7 @@ package com.royal.reserve.bank.account.api.controller;
 import com.royal.reserve.bank.account.api.service.AccountService;
 import com.royal.reserve.bank.account.api.dto.AccountResponse;
 import com.royal.reserve.bank.account.api.dto.AccountRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class AccountController {
      * @return A ResponseEntity with a success message and HTTP status code 201 if the account was created successfully.
      */
     @PostMapping
+    @Operation(summary="create a new user account")
     public ResponseEntity<String> createAccount(@RequestBody AccountRequest accountRequest) {
         accountService.createAccount(accountRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body
@@ -35,12 +37,14 @@ public class AccountController {
     }
 
     /**
+     * It has to be protected . Only bank member can see
      * Retrieves all bank accounts.
      *
      * @return A list of AccountResponse objects representing the bank accounts.
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary="return A list of AccountResponse objects representing the bank accounts.")
     public List<AccountResponse> getAllAccounts() {
         return accountService.getAllAccounts();
     }
@@ -53,6 +57,7 @@ public class AccountController {
      *         or a ResponseEntity with an error message and HTTP status code 404 if the account was not found.
      */
     @DeleteMapping
+    @Operation(summary="return A ResponseEntity with a success message and HTTP status code 200 if the account was deleted")
     public ResponseEntity<String> deleteAccount(@RequestBody AccountRequest accountRequest) {
         try {
             accountService.deleteAccountByAccountHolderName(accountRequest.getAccountHolderName());

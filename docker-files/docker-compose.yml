@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   account-api:
     container_name: account-api
@@ -12,15 +13,15 @@ services:
       - api-gateway
     restart: on-failure
 
-  account-api-mongo:
-    image: mongo:6.0.5
-    container_name: account-api-mongo
-    ports:
-      - "27017:27017"
-    expose:
-      - "27017"
-    volumes:
-      - ./data/account-api-mongo:/data/mongo
+#  account-api-mongo:
+#    image: mongo:6.0.5
+#    container_name: account-api-mongo
+#    ports:
+#      - "27017:27017"
+#    expose:
+#      - "27017"
+#    volumes:
+#      - ./data/account-api-mongo:/data/mongo
 
   api-gateway:
     image: 0145136798/api-gateway

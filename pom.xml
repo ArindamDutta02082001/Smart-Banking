@@ -26,16 +26,31 @@
     </properties>
 
     <modules>
-        <module>config-server</module>
+<!--        <module>config-server</module>-->
         <module>discovery-server</module>
-        <module>api-gateway</module>
-        <module>account-api</module>
+<!--        <module>api-gateway</module>-->
+<!--        <module>account-api</module>-->
         <module>asset-management-api</module>
         <module>transaction-api</module>
         <module>notification-api</module>
     </modules>
 
     <dependencies>
+
+        <!--        openapi swagger deps -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version> <!-- Use latest stable -->
+        </dependency>
+
+        <!--  or -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springdoc</groupId>-->
+        <!--            <artifactId>springdoc-openapi-ui</artifactId>-->
+        <!--            <version>1.7.0</version> &lt;!&ndash; Use latest stable &ndash;&gt;-->
+        <!--        </dependency> -->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

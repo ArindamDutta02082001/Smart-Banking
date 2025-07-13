@@ -46,6 +46,7 @@ public class SecurityConfig {
      * @throws IOException                if an I/O error occurs while reading the public key
      * @throws JwkException               if an error occurs while fetching the JSON Web Key from the JwkProvider
      */
+
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity)
             throws IOException, JwkException {
@@ -65,7 +66,7 @@ public class SecurityConfig {
 //                                .permitAll()
 //                                .anyExchange()
 //                                .authenticated());
-        
+//
         serverHttpSecurity
         .csrf().disable()
         .authorizeExchange(exchange -> exchange.anyExchange().permitAll());
