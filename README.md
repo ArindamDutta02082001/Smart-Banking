@@ -1,8 +1,8 @@
 <h1>
   <p align="center">
-<!--     <img src="./docs/readme-assets/royal-reserve-bank-logo.png" alt="Smart Bank" width="300"> -->
+<!--     <img src="./docs/readme-assets/royal-reserve-bank-logo.png" alt="Smart Pay" width="300"> -->
     </br>
-    Smart Bank
+    Smart Pay
   </p>
 </h1>
 
@@ -32,13 +32,13 @@
 
 # About 🚀
 
-The Smart Bank is a digital banking solution that utilizes a microservices architecture. It incorporates the latest Spring Boot and Spring Cloud technologies to implement a range of architectural patterns such as service discovery, centralized configuration, distributed tracing, circuit breaker, cache-aside or event-driven architecture.
+The Smart Pay is a digital banking solution that utilizes a microservices architecture. It incorporates the latest Spring Boot and Spring Cloud technologies to implement a range of architectural patterns such as service discovery, centralized configuration, distributed tracing, circuit breaker, cache-aside or event-driven architecture.
 <p>
 It consists of several independent modules that work together to provide a scalable and fault-tolerant system. The modules communicate with each other through well-defined APIs and leverage databases for data storage to perform various banking activities, such as account creation, money transfers, asset management and sending email or SMS notifications.
 
 # Solution Architecture 🔍
 
-The Smart Bank project is designed using a microservices architecture, which structures the application as a collection of loosely coupled services. Each service represents a specific business capability and can be developed and scaled independently.
+The Smart Pay project is designed using a microservices architecture, which structures the application as a collection of loosely coupled services. Each service represents a specific business capability and can be developed and scaled independently.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/readme-assets/high-level-architecture-dark.png">
@@ -62,13 +62,13 @@ The key architectural patterns used in the project include:
 <!--  -->
 - **Event-driven Architecture:** The Notification API module utilizes Apache Kafka, a distributed streaming platform, for asynchronous communication. Kafka provides a reliable and scalable messaging system that decouples the sender and receiver of messages. When a microservice needs to send a notification, it publishes a message to a specific Kafka topic. The Notification API, acting as a consumer, receives the message and processes it accordingly. Asynchronous communication allows the system to handle notification processing separately from the main request flow, improving performance and scalability.
 <!--  -->
-- **Database per Microservice:** Each microservice in the Smart Bank project has its own dedicated database. The Account API communicates with a MongoDB database, the Transaction API uses PostgreSQL, and the Asset Management API interacts with a MySQL database. This approach of having a database per microservice ensures data isolation and autonomy. It allows each microservice to manage its own data schema, optimize database operations based on specific requirements, and scale independently as needed.
+- **Database per Microservice:** Each microservice in the Smart Pay project has its own dedicated database. The Account API communicates with a MongoDB database, the Transaction API uses PostgreSQL, and the Asset Management API interacts with a MySQL database. This approach of having a database per microservice ensures data isolation and autonomy. It allows each microservice to manage its own data schema, optimize database operations based on specific requirements, and scale independently as needed.
 <!--  -->
 - **Cache-aside Pattern:** Caching plays a crucial role in enhancing performance and reducing database load in microservices architecture. The Account API utilizes Redis template, while the Asset and Transaction API leverage Spring Cache. When a request requires data, the microservice first checks the cache. If the data is available, it is retrieved from the cache, avoiding the need to fetch it from the database. This caching strategy efficiently reduces response times and enhances the overall performance of the system.
 <!--  -->
 - **Circuit Breaker Pattern:** The Circuit Breaker pattern is used to handle faults and failures in distributed systems. It acts as a safeguard to prevent cascading failures when a microservice is unavailable or experiencing high latency. The Circuit Breaker is implemented using Resilience4J library in the Transaction API. If it detects failures or slow responses, it "opens the circuit" and redirects subsequent requests to a fallback mechanism or returns an error response directly. This helps to protect the overall system from overloading and allows it to gracefully degrade when dependencies are unavailable.
 <!--  -->
-- **Security Pattern:** The Smart Bank project incorporates security measures throughout the architecture. The API Gateway handles authentication and authorization, ensuring that only authenticated and authorized requests reach the microservices. The microservices themselves follow secure coding practices and implement appropriate security controls, such as input validation, encryption of sensitive data, and protection against common vulnerabilities.
+- **Security Pattern:** The Smart Pay project incorporates security measures throughout the architecture. The API Gateway handles authentication and authorization, ensuring that only authenticated and authorized requests reach the microservices. The microservices themselves follow secure coding practices and implement appropriate security controls, such as input validation, encryption of sensitive data, and protection against common vulnerabilities.
 <!--  -->
 - **Containerization and Orchestration:** The microservices are containerized using Docker, allowing them to run in isolated environments with their dependencies. Containerization provides consistency in deploying microservices across different environments.
 
@@ -113,7 +113,7 @@ The key architectural patterns used in the project include:
 
 # Technologies Used 💡
 
-The Smart Bank project utilizes the following technologies and frameworks:
+The Smart Pay project utilizes the following technologies and frameworks:
 
 - **Java 17:** for implementing the microservices.
 - **Spring Boot:** for simplifying the development and deployment of microservices by using pre-configured templates and tools.
@@ -149,7 +149,7 @@ To access the full API documentation, navigate to the root directory and execute
 
 # Testing ✅
 
-The project includes comprehensive unit tests and integration tests for each microservice. Additionally, you can use Postman to interact with the Smart Bank APIs and perform manual testing. The project provides a Postman collection and environment file for easy import and configuration.
+The project includes comprehensive unit tests and integration tests for each microservice. Additionally, you can use Postman to interact with the Smart Pay APIs and perform manual testing. The project provides a Postman collection and environment file for easy import and configuration.
 
 ### Automated Testing
 
@@ -167,8 +167,8 @@ To perform manual testing using Postman, follow these steps:
 
 - Install Postman if you haven't already.
 - Import the provided Postman [collection](./postman/postman-collection.json) and [environment](./postman/postman-environment.json) JSON files located in the postman/ folder.
-- Select the imported "Smart Bank" collection and choose the desired request from the available endpoints.
-- Set the imported "Smart Bank" environment as the active environment in Postman.
+- Select the imported "Smart Pay" collection and choose the desired request from the available endpoints.
+- Set the imported "Smart Pay" environment as the active environment in Postman.
 - Run the "Authorization" POST request to receive authorization tokens.
 - Customize the request parameters, headers, and body as required.
 - Click the "Send" button to execute the request and observe the response.
@@ -179,7 +179,7 @@ To perform manual testing using Postman, follow these steps:
   <img src="./docs/readme-assets/manual-testing-with-postman.png">
 </picture>
 
-Remember to ensure that the Smart Bank microservices are running before executing the requests in Postman to ensure successful communication with the APIs.
+Remember to ensure that the Smart Pay microservices are running before executing the requests in Postman to ensure successful communication with the APIs.
 
 # Monitoring and Logging 📊
 
