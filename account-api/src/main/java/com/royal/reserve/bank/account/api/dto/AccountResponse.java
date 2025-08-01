@@ -1,5 +1,6 @@
 package com.royal.reserve.bank.account.api.dto;
 
+import com.royal.reserve.bank.account.api.model.Account;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +20,6 @@ import java.util.Currency;
 @NoArgsConstructor
 @Schema(description = "Response object for account operations")
 public class AccountResponse {
-    private String id;
-    private String accountNumber;
-    private String accountHolderName;
-    private BigDecimal balance;
-    private Currency currency;
+    private String message;
+    private Account account;
 }

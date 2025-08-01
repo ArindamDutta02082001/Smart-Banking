@@ -128,7 +128,19 @@
             <version>1.18.30</version> <!-- or newer -->
         </dependency>
 
-<!--         prometheus and other metric related depedency -->
+<!--        jakarta persistence api for @CreationTimestamp ,  @UpdateTimestamp  -->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+
+<!--        hibernate orm deps -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+
+        <!--         prometheus and other metric related depedency -->
 <!--        <dependency>-->
 <!--            <groupId>io.micrometer</groupId>-->
 <!--            <artifactId>micrometer-tracing-bridge-brave</artifactId>-->
@@ -146,24 +158,28 @@
 <!--            <artifactId>micrometer-registry-prometheus</artifactId>-->
 <!--            <scope>runtime</scope>-->
 <!--        </dependency>-->
+
     </dependencies>
 
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
             <!-- Surefire plugin for test execution (with fix for absolute path warning) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M9</version>
-                <configuration>
-                    <skipTests>true</skipTests>      <!-- for now TCs have error so skipping TCs err -->
-                </configuration>
+<!--                <configuration>-->
+<!--                    <skipTests>true</skipTests>      &lt;!&ndash; for now TCs have error so skipping TCs err &ndash;&gt;-->
+<!--                </configuration>-->
             </plugin>
+
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
@@ -177,11 +193,34 @@
                     </to>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
             </plugin>
+
+        <!--             Jacoco test coverage plugin -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.11</version> <!-- Or latest -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>

@@ -44,9 +44,9 @@ class AccountServiceTest {
     void testCreateAccount() {
         // Given
         AccountRequest accountRequest = createAccountRequest("Matthew McConaughey",
-                BigDecimal.valueOf(1000), Currency.getInstance("USD"));
+                BigDecimal.valueOf(1000), Currency.getInstance("USD") ,  "1234567890" , "random@email.com", "password@123");
         Account account = createAccount("FI32-8473-8127-1823-1732", "Matthew McConaughey",
-                BigDecimal.valueOf(1000), Currency.getInstance("USD"));
+                BigDecimal.valueOf(1000), Currency.getInstance("USD"),  "1234567890" , "random@email.com", "password@123");
 
         when(accountRepository.save(any(Account.class))).thenReturn(account);
 
@@ -78,9 +78,9 @@ class AccountServiceTest {
     void testGetAllAccounts() {
         // Given
         Account account1 = createAccount("MT23-3821-4829-3279-9231",
-                "Barack Obama", BigDecimal.valueOf(1000), Currency.getInstance("USD"));
+                "Barack Obama", BigDecimal.valueOf(1000), Currency.getInstance("USD"),  "1234567890" , "random@email.com", "password@123");
         Account account2 = createAccount("NE23-3948-4762-3721-8392",
-                "Michelle Obama", BigDecimal.valueOf(2000), Currency.getInstance("EUR"));
+                "Michelle Obama", BigDecimal.valueOf(2000), Currency.getInstance("EUR") ,  "1234567890" , "random@email.com", "password@123");
         List<Account> accounts = new ArrayList<>();
         accounts.add(account1);
         accounts.add(account2);
@@ -103,7 +103,7 @@ class AccountServiceTest {
         // Given
         String accountHolderName = "Barack Obama";
         Account account = createAccount("MT23-3821-4829-3279-9231", accountHolderName,
-                BigDecimal.valueOf(1000), Currency.getInstance("USD"));
+                BigDecimal.valueOf(1000), Currency.getInstance("USD") , "1234567890" , "random@email.com", "password@123");
         List<Account> accounts = new ArrayList<>();
         accounts.add(account);
 
@@ -147,13 +147,19 @@ class AccountServiceTest {
      * @param accountHolderName the account holder name
      * @param balance           the account balance
      * @param currency          the account currency
+     * @param mobile            the account holder mobile
+     * @param email              the account holder email
+     * @param password          the account holder password
      * @return the created {@link AccountRequest} object
      */
-    private AccountRequest createAccountRequest(String accountHolderName, BigDecimal balance, Currency currency) {
+    private AccountRequest createAccountRequest(String accountHolderName, BigDecimal balance, Currency currency , String mobile , String email,  String password) {
         AccountRequest accountRequest = new AccountRequest();
         accountRequest.setAccountHolderName(accountHolderName);
         accountRequest.setBalance(balance);
         accountRequest.setCurrency(currency);
+        accountRequest.setMobile(mobile);
+        accountRequest.setEmail(email);
+        accountRequest.setPassword(password);
         return accountRequest;
     }
 
@@ -164,15 +170,21 @@ class AccountServiceTest {
      * @param accountHolderName the account holder name
      * @param balance           the account balance
      * @param currency          the account currency
+     * @param mobile            the account holder mobile
+     * @param email              the account holder email
+     * @param password          the account holder password
      * @return the created {@link Account} object
      */
     private Account createAccount(String accountNumber, String accountHolderName,
-                                  BigDecimal balance, Currency currency) {
+                                  BigDecimal balance, Currency currency , String mobile , String email,  String password) {
         Account account = new Account();
         account.setAccountNumber(accountNumber);
         account.setAccountHolderName(accountHolderName);
         account.setBalance(balance);
         account.setCurrency(currency);
+        account.setMobile(mobile);
+        account.setEmail(email);
+        account.setPassword(password);
         return account;
     }
 }

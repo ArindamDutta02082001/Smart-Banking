@@ -19,6 +19,7 @@ import java.util.*;
 @Slf4j
 public class AccountService {
 
+
     private final AccountRepository accountRepository;
 
     private final RedisTemplate<String, List<AccountResponse>> redisTemplate;
@@ -28,24 +29,35 @@ public class AccountService {
     private static final Random random = new Random();
 
     /**
-     * Creates a new bank account.
+     * Creates a new bank account for a user with details in it.
      *
      * @param accountRequest The account request containing account details.
      */
-    public void createAccount(AccountRequest accountRequest) {
+    public Account createAccount(AccountRequest accountRequest) {
+
+
         Account account = Account.builder()
                 .accountNumber(generateIBAN())
                 .accountHolderName(accountRequest.getAccountHolderName())
                 .balance(accountRequest.getBalance())
                 .currency(accountRequest.getCurrency())
+                .email(accountRequest.getEmail())
+                .mobile(accountRequest.getMobile())
+                .password(accountRequest.getPassword())
                 .build();
 
         accountRepository.save(account);
+
         redisTemplate.delete(CACHE_KEY);
+
         log.info("Account for {} is created", account.getAccountHolderName());
+        log.info("Your Smart Bank account id is : {} ", account.getAccountNumber());
+
+        return account;
     }
 
     /**
+     * utility function
      * Generates a random International Bank Account Number (IBAN).
      *
      * @return The generated IBAN.
@@ -85,18 +97,16 @@ public class AccountService {
     }
 
     /**
+     * utility function
      * Maps an Account object to an AccountResponse object.
      *
      * @param account The Account object to map.
      * @return The mapped AccountResponse object.
      */
     private AccountResponse mapToAccountResponse(Account account) {
-        return AccountResponse.builder()
-                .id(account.getId())
-                .accountNumber(account.getAccountNumber())
-                .accountHolderName(account.getAccountHolderName())
-                .balance(account.getBalance())
-                .currency(account.getCurrency())
+       return AccountResponse.builder()
+                .account(account)
+                .message("active")
                 .build();
     }
 

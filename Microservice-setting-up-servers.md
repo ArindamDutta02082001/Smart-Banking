@@ -107,7 +107,7 @@ spring.cloud.config.server.prefix=/config-server
 # relative path to the config files folder , no quotes "" . in MAC quote required
 spring.cloud.config.server.native.searchLocations=file:../config-files
 
-Create a confif-files folder like below
+Create a config-files folder like below
 
 config-files/
 ├── service-a.properties
@@ -148,7 +148,7 @@ spring.profiles.activate=docker
 | **Config Client** (a service fetching config from Config Server) | ✅ `spring-cloud-config-client` |
 | **Config Server** (central config provider)                      | ✅ `spring-cloud-config-server` |
 
-5. On successfull config server set up you can view the configs by GET request to the url `http:#localhost:8888/config-server/account-api/docker(or default)`
+5. On successfull config server set up you can view the configs by GET request to the url `http://localhost:8888/config-server/account-api/docker` or `http://localhost:8888/config-server/account-api/default`
 it will show the configs of the particular .properties file
 
 > [!NOTE]
@@ -156,7 +156,8 @@ it will show the configs of the particular .properties file
 >Q How through the config server uri , the microservice project it gets to pull the config files ?
 > 
 > ans: Each service specifies its application name in its application.properties right so wha se service ka naam pata hota
-aur us service ke naam se git pe application.properties hoga or inside the config folder (see service-name.properties file is there) usse wo fetch ho jayega and we can give teh rofile name too
+aur us service ke naam se git pe application.properties hoga or inside the config folder (see service-name.properties file is there) 
+usse wo fetch ho jayega and we can give teh profile name too
 >
 > Q I want to load config changes dynamically in the running microservice
 > ![img.png](docs/readme-assets/dynamicloadconfig.png)

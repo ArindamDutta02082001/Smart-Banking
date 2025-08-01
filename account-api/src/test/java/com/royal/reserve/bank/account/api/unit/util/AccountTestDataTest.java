@@ -5,6 +5,7 @@ import com.royal.reserve.bank.account.api.repository.AccountRepository;
 import com.royal.reserve.bank.account.api.util.AccountTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -33,14 +35,20 @@ class AccountTestDataTest {
      */
     @Test
     void testRun() {
-        // Given
-        List<Account> accountList = createAccountList();
-
         // When
         accountTestData.run();
 
         // Then
-        verify(accountRepository, times(1)).saveAll(accountList);
+        ArgumentCaptor<List<Account>> captor = ArgumentCaptor.forClass(List.class);
+        verify(accountRepository, times(1)).saveAll(captor.capture());
+
+        List<Account> actualAccounts = captor.getValue();
+        assertEquals(4, actualAccounts.size());
+
+        assertEquals("Bruce Willis", actualAccounts.get(0).getAccountHolderName());
+        assertEquals("CZ61-5051-2543-6888-5372", actualAccounts.get(0).getAccountNumber());
+        assertEquals("EUR", actualAccounts.get(0).getCurrency().getCurrencyCode());
+        // Optionally test other critical fields
     }
 
     /**

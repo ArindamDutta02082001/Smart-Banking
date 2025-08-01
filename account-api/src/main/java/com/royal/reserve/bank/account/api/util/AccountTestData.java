@@ -7,8 +7,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,6 +30,11 @@ public class AccountTestData implements CommandLineRunner {
         accountItem1.setAccountHolderName("Bruce Willis");
         accountItem1.setBalance(BigDecimal.valueOf(1340238));
         accountItem1.setCurrency(Currency.getInstance("EUR"));
+        accountItem1.setEmail("sample@email.com");
+        accountItem1.setMobile("1234567890");
+        accountItem1.setPassword("xxxxxxxxxx");
+        accountItem1.setCreatedOn(Date.from(Instant.now()));
+        accountItem1.setUpdatedOn(Date.from(Instant.now()));
         accountList.add(accountItem1);
 
         Account accountItem2 = new Account();
@@ -36,6 +43,11 @@ public class AccountTestData implements CommandLineRunner {
         accountItem2.setAccountHolderName("Harrison Ford");
         accountItem2.setBalance(BigDecimal.valueOf(25843));
         accountItem2.setCurrency(Currency.getInstance("GBP"));
+        accountItem1.setEmail("sample@email.com");
+        accountItem1.setMobile("1234567890");
+        accountItem1.setPassword("xxxxxxxxxx");
+        accountItem1.setCreatedOn(Date.from(Instant.now()));
+        accountItem1.setUpdatedOn(Date.from(Instant.now()));
         accountList.add(accountItem2);
 
         Account accountItem3 = new Account();
@@ -44,6 +56,11 @@ public class AccountTestData implements CommandLineRunner {
         accountItem3.setAccountHolderName("Scarlett Johansson");
         accountItem3.setBalance(BigDecimal.valueOf(14324));
         accountItem3.setCurrency(Currency.getInstance("EUR"));
+        accountItem1.setEmail("sample@email.com");
+        accountItem1.setMobile("1234567890");
+        accountItem1.setPassword("xxxxxxxxxx");
+        accountItem1.setCreatedOn(Date.from(Instant.now()));
+        accountItem1.setUpdatedOn(Date.from(Instant.now()));
         accountList.add(accountItem3);
 
         Account accountItem4 = new Account();
@@ -52,6 +69,11 @@ public class AccountTestData implements CommandLineRunner {
         accountItem4.setAccountHolderName("Ryan Gosling");
         accountItem4.setBalance(BigDecimal.valueOf(8927382));
         accountItem4.setCurrency(Currency.getInstance("HUF"));
+        accountItem1.setEmail("sample@email.com");
+        accountItem1.setMobile("1234567890");
+        accountItem1.setPassword("xxxxxxxxxx");
+        accountItem1.setCreatedOn(Date.from(Instant.now()));
+        accountItem1.setUpdatedOn(Date.from(Instant.now()));
         accountList.add(accountItem4);
 
         accountRepository.saveAll(accountList);

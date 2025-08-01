@@ -1,15 +1,19 @@
 package com.royal.reserve.bank.account.api.controller;
 
+import com.royal.reserve.bank.account.api.model.Account;
+import com.royal.reserve.bank.account.api.repository.AccountRepository;
 import com.royal.reserve.bank.account.api.service.AccountService;
 import com.royal.reserve.bank.account.api.dto.AccountResponse;
 import com.royal.reserve.bank.account.api.dto.AccountRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller class that handles HTTP requests related to bank accounts.
@@ -21,6 +25,9 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    @Autowired
+    private final AccountRepository accountRepository;
+
     /**
      * Creates a new bank account.
      *
@@ -29,11 +36,32 @@ public class AccountController {
      */
     @PostMapping
     @Operation(summary="create a new user account")
-    public ResponseEntity<String> createAccount(@RequestBody AccountRequest accountRequest) {
-        accountService.createAccount(accountRequest);
+    public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest accountRequest) {
+
+        // we will find if a account with same name and phone number exists
+        Optional<Account> existingAccount = accountRepository
+                .findByAccountHolderNameAndMobile(accountRequest.getAccountHolderName(), accountRequest.getMobile());
+
+        if (existingAccount.isPresent()) {
+            AccountResponse accountResponse = AccountResponse.builder()
+                    .account(existingAccount.get())
+                    .message("Already account exists for " +
+                            accountRequest.getAccountHolderName() + " with mobile : " + accountRequest.getMobile())
+                    .build();
+            return ResponseEntity.status(HttpStatus.CREATED).body
+                    (accountResponse);
+        }
+
+        Account  account = accountService.createAccount(accountRequest);
+
+        AccountResponse accountResponse = AccountResponse.builder()
+                .account(account)
+                .message("Successfully set up a new bank account for " +
+                        accountRequest.getAccountHolderName() + ".")
+                                            .build();
+
         return ResponseEntity.status(HttpStatus.CREATED).body
-                ("Successfully set up a new bank account for " +
-                accountRequest.getAccountHolderName() + ".");
+                (accountResponse);
     }
 
     /**

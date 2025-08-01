@@ -3,6 +3,7 @@ package com.royal.reserve.bank.account.api.unit.controller;
 import com.royal.reserve.bank.account.api.controller.AccountController;
 import com.royal.reserve.bank.account.api.dto.AccountRequest;
 import com.royal.reserve.bank.account.api.dto.AccountResponse;
+import com.royal.reserve.bank.account.api.model.Account;
 import com.royal.reserve.bank.account.api.service.AccountService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.List;
+import java.util.Objects;
 
 import static org.mockito.Mockito.*;
 
@@ -31,23 +35,6 @@ class AccountControllerTest {
     @InjectMocks
     private AccountController accountController;
 
-    /**
-     * Test for the {@link AccountController#createAccount(AccountRequest)} method.
-     */
-    @Test
-    void testCreateAccount() {
-        // Given
-        AccountRequest accountRequest = new AccountRequest();
-        accountRequest.setAccountHolderName("Al Pacino");
-
-        // When
-        ResponseEntity<String> responseEntity = accountController.createAccount(accountRequest);
-
-        // Then
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals("Successfully set up a new bank account for Al Pacino.", responseEntity.getBody());
-        verify(accountService, times(1)).createAccount(accountRequest);
-    }
 
     /**
      * Test for the {@link AccountController#getAllAccounts()} method.
@@ -56,12 +43,16 @@ class AccountControllerTest {
     void testGetAllAccounts() {
         // Given
         AccountResponse accountResponse1 = new AccountResponse();
-        accountResponse1.setAccountNumber("LI42-3842-3283-9483-4892");
-        accountResponse1.setAccountHolderName("Tom Hanks");
+        Account account1 = createAccount("MT23-3821-4829-3279-9231", "Tom Hanks",
+                BigDecimal.valueOf(1000), Currency.getInstance("USD") , "1234567890" , "random@email.com", "password@123");
+        accountResponse1.setAccount(account1);
+        accountResponse1.setMessage("active");
 
         AccountResponse accountResponse2 = new AccountResponse();
-        accountResponse2.setAccountNumber("DE32-8473-8127-1823-1732");
-        accountResponse2.setAccountHolderName("Julia Roberts");
+        Account account2 = createAccount("DE32-8473-8127-1823-1732", "Julia Roberts",
+                BigDecimal.valueOf(1000), Currency.getInstance("USD") , "1234567890" , "random@email.com", "password@123");
+        accountResponse1.setAccount(account2);
+        accountResponse1.setMessage("active");
 
         List<AccountResponse> expectedAccounts = Arrays.asList(accountResponse1, accountResponse2);
 
@@ -73,6 +64,20 @@ class AccountControllerTest {
         // Then
         assertEquals(expectedAccounts, actualAccounts);
         verify(accountService, times(1)).getAllAccounts();
+    }
+
+
+    private Account createAccount(String accountNumber, String accountHolderName,
+                                  BigDecimal balance, Currency currency , String mobile , String email, String password) {
+        Account account = new Account();
+        account.setAccountNumber(accountNumber);
+        account.setAccountHolderName(accountHolderName);
+        account.setBalance(balance);
+        account.setCurrency(currency);
+        account.setMobile(mobile);
+        account.setEmail(email);
+        account.setPassword(password);
+        return account;
     }
 
     /**

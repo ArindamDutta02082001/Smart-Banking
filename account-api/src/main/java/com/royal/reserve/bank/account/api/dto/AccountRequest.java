@@ -20,6 +20,15 @@ import java.util.Currency;
 @Schema(description = "Request payload for creating an account")
 public class AccountRequest {
 
+    @Schema(description = "Mobile of the account holder", example = "9620922432")
+    private String mobile;
+
+    @Schema(description = "Email of the account holder", example = "JohnDoe@email.com")
+    private String email;
+
+    @Schema(description = "Password of the account holder", example = "JohnDoe@123")
+    private String password;
+
     @Schema(description = "Name of the account holder", example = "John Doe")
     private String accountHolderName;
 

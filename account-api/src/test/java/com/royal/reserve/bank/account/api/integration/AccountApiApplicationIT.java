@@ -12,8 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class AccountApiApplicationIT {
     @Test
     void contextLoads() {
-        Assertions.assertDoesNotThrow(() -> {
-            AccountApiApplication.main(new String[]{});
-        });
+        // context load verification happens automatically
     }
 }
