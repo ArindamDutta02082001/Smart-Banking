@@ -1,4 +1,4 @@
-package com.royal.reserve.bank.transaction.api.dto;
+package com.royal.reserve.bank.transaction.api.dto.FeignClientResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AssetManagementResponse {
-    private String assetCode;
+    private String mobile ;
+    private Asset asset;
     private boolean isAssetAvailable;
 }

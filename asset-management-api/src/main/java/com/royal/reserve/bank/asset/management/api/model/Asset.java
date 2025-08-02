@@ -1,18 +1,17 @@
 package com.royal.reserve.bank.asset.management.api.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import jakarta.persistence.*;
 
+import java.util.Currency;
 import java.util.Objects;
 
 /**
  * Represents an asset.
  */
 @Entity
+@Builder
 @Table(name = "t_asset")
 @Getter
 @Setter
@@ -23,9 +22,19 @@ public class Asset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String assetCode;
     private String assetName;
+
     private int value;
+
+    private Currency Currency;
+
+    private String UserId;
+
+    private String mobile;
+    private String email;
+    private String accountHolderName;
 
     /**
      * Overrides the equals method to provide custom comparison logic for testing purposes.

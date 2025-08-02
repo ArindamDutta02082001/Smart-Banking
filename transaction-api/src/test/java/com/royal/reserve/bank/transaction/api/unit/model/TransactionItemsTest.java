@@ -3,6 +3,9 @@ package com.royal.reserve.bank.transaction.api.unit.model;
 import com.royal.reserve.bank.transaction.api.model.TransactionItems;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Currency;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -16,72 +19,53 @@ class TransactionItemsTest {
     void setUp() {
         transactionItems = new TransactionItems();
         transactionItems.setId(1L);
-        transactionItems.setAssetCode("NDAQ");
-        transactionItems.setAssetName("NASDAQ");
-        transactionItems.setValue(11000);
+        transactionItems.setMessage("Investment Transfer");
+        transactionItems.setAmt(5000);
+        transactionItems.setCurrency(Currency.getInstance("USD"));
     }
 
-    /**
-     * Test the constructors.
-     */
     @Test
     void testGetId() {
-        // When and Then
         assertEquals(1L, transactionItems.getId());
     }
 
     @Test
-    void testGetAssetCode() {
-        // When and Then
-        assertEquals("NDAQ", transactionItems.getAssetCode());
+    void testGetMessage() {
+        assertEquals("Investment Transfer", transactionItems.getMessage());
     }
 
     @Test
-    void testGetAssetName() {
-        // When and Then
-        assertEquals("NASDAQ", transactionItems.getAssetName());
+    void testGetAmt() {
+        assertEquals(5000, transactionItems.getAmt());
     }
 
     @Test
-    void testGetValue() {
-        // When and Then
-        assertEquals(11000, transactionItems.getValue());
+    void testGetCurrency() {
+        assertEquals(Currency.getInstance("USD"), transactionItems.getCurrency());
     }
 
     @Test
     void testSetId() {
-        // When
         transactionItems.setId(2L);
-
-        // Then
         assertEquals(2L, transactionItems.getId());
     }
 
     @Test
-    void testSetAssetCode() {
-        // When
-        transactionItems.setAssetCode("DXY");
-
-        // Then
-        assertEquals("DXY", transactionItems.getAssetCode());
+    void testSetMessage() {
+        transactionItems.setMessage("Updated Message");
+        assertEquals("Updated Message", transactionItems.getMessage());
     }
 
     @Test
-    void testSetAssetName() {
-        // When
-        transactionItems.setAssetName("Walt Disney Company");
-
-        // Then
-        assertEquals("Walt Disney Company", transactionItems.getAssetName());
+    void testSetAmt() {
+        transactionItems.setAmt(9999);
+        assertEquals(9999, transactionItems.getAmt());
     }
 
     @Test
-    void testSetValue() {
-        // When
-        transactionItems.setValue(200);
-
-        // Then
-        assertEquals(200, transactionItems.getValue());
+    void testSetCurrency() {
+        Currency newCurrency = Currency.getInstance("INR");
+        transactionItems.setCurrency(newCurrency);
+        assertEquals(newCurrency, transactionItems.getCurrency());
     }
 }
-

@@ -1,5 +1,6 @@
 package com.royal.reserve.bank.asset.management.api.dto;
 
+import com.royal.reserve.bank.asset.management.api.model.Asset;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class AssetManagementResponse implements Serializable {
-    private String assetCode;
+    private String mobile ;
+    private Asset asset;
     private boolean isAssetAvailable;
 }

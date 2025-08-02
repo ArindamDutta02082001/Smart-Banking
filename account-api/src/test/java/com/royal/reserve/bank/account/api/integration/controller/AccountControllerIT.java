@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -36,6 +38,9 @@ class AccountControllerIT {
 
     @MockBean
     private AccountService accountService;
+
+    @MockBean
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @MockBean
     private AccountRepository accountRepository;
@@ -110,7 +115,10 @@ class AccountControllerIT {
     @Test
     void testDeleteAccount() throws Exception {
         // Given
-        doNothing().when(accountService).deleteAccountByAccountHolderName("Nicole Kidman");
+        Account mockAccount = new Account();
+        mockAccount.setAccountHolderName("Nicole Kidman");
+        when(accountService.deleteAccountByAccountHolderName("Nicole Kidman"))
+                .thenReturn(Optional.of(mockAccount));
 
         // When and Then
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/account")

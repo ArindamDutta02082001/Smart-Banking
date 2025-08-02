@@ -1,25 +1,28 @@
 package com.royal.reserve.bank.transaction.api.integration.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.royal.reserve.bank.transaction.api.dto.TransactionItemsDto;
+import com.royal.reserve.bank.transaction.api.controller.TransactionController;
 import com.royal.reserve.bank.transaction.api.dto.TransactionRequest;
 import com.royal.reserve.bank.transaction.api.service.TransactionService;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Currency;
 import java.util.concurrent.CompletableFuture;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+/**
+ * Integration tests for {@link TransactionController}.
+ */
+@WebMvcTest(TransactionController.class)
 class TransactionControllerIT {
 
     @Autowired
@@ -32,50 +35,45 @@ class TransactionControllerIT {
     private TransactionService transactionService;
 
     @Test
-    void testProcessTransaction() throws Exception {
+    void testProcessTransactionSuccess() throws Exception {
+        // Given
         TransactionRequest request = createTransactionRequest();
-        when(transactionService.processTransaction(request))
-                .thenReturn(String.valueOf(CompletableFuture.completedFuture("Result")));
         String jsonRequest = objectMapper.writeValueAsString(request);
-        mockMvc.perform(post("/api/transaction")
-                        .content(jsonRequest)
-                        .contentType(MediaType.APPLICATION_JSON))
+
+        Mockito.when(transactionService.processTransaction(any(TransactionRequest.class)))
+                .thenReturn("Transaction is processed");
+
+        // When & Then
+        mockMvc.perform(post("/api/transaction/initiate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    void testProcessTransactionWithFallback() throws Exception {
+    void testProcessTransactionFallback() throws Exception {
+        // Given
         TransactionRequest request = createTransactionRequest();
-        RuntimeException runtimeException = new RuntimeException("Simulated exception");
-        when(transactionService.processTransaction(request)).thenThrow(runtimeException);
         String jsonRequest = objectMapper.writeValueAsString(request);
-        mockMvc.perform(post("/api/transaction")
-                        .content(jsonRequest)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+
+        // Simulate an exception in service
+        Mockito.when(transactionService.processTransaction(any(TransactionRequest.class)))
+                .thenThrow(new RuntimeException("Simulated exception"));
+
+        // When & Then
+        mockMvc.perform(post("/api/transaction/initiate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isCreated());  // Because fallback also returns 201
     }
 
     private TransactionRequest createTransactionRequest() {
-        List<TransactionItemsDto> transactionItemsDtoList = new ArrayList<>();
-
-        TransactionItemsDto firstItem = new TransactionItemsDto();
-        firstItem.setId(1L);
-        firstItem.setAssetCode("MSFT");
-        firstItem.setAssetName("Microsoft Corporation");
-        firstItem.setValue(11300);
-        transactionItemsDtoList.add(firstItem);
-
-        TransactionItemsDto secondItem = new TransactionItemsDto();
-        secondItem.setId(2L);
-        secondItem.setAssetCode("COIN");
-        secondItem.setAssetName("Coinbase Inc.");
-        secondItem.setValue(24000);
-        transactionItemsDtoList.add(secondItem);
-
         TransactionRequest request = new TransactionRequest();
-        request.setTransactionItemsDtoList(transactionItemsDtoList);
-
+        request.setSenderMob("9999999999");
+        request.setReceiverMob("8888888888");
+        request.setAmount(1000.0);
+        request.setPurpose("Test Transaction");
+        request.setCurrency(Currency.getInstance("USD"));
         return request;
     }
 }
-

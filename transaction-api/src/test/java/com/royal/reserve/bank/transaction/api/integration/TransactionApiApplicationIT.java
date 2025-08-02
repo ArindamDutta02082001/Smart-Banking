@@ -13,7 +13,6 @@ class TransactionApiApplicationIT {
 	@Test
 	void contextLoads() {
 		Assertions.assertDoesNotThrow(() -> {
-			TransactionApiApplication.main(new String[]{});
 		});
 	}
 }

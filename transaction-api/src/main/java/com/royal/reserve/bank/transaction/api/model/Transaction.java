@@ -22,6 +22,15 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String transactionId;
+
+
+    private String senderName;
+    private String receiverName;
+
+    private String senderMob;
+    private String receiverMob;
+
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<TransactionItems> transactionItemsList;
 }

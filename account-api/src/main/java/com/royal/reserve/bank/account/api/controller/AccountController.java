@@ -1,5 +1,8 @@
 package com.royal.reserve.bank.account.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.royal.reserve.bank.account.api.event.UserEvent;
 import com.royal.reserve.bank.account.api.model.Account;
 import com.royal.reserve.bank.account.api.repository.AccountRepository;
 import com.royal.reserve.bank.account.api.service.AccountService;
@@ -10,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +32,11 @@ public class AccountController {
     @Autowired
     private final AccountRepository accountRepository;
 
+    private final KafkaTemplate<String, String> kafkaTemplate;   // topic , event
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     /**
      * Creates a new bank account.
      *
@@ -36,7 +45,7 @@ public class AccountController {
      */
     @PostMapping
     @Operation(summary="create a new user account")
-    public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest accountRequest) {
+    public ResponseEntity<AccountResponse> createAccount(@RequestBody AccountRequest accountRequest) throws JsonProcessingException {
 
         // we will find if a account with same name and phone number exists
         Optional<Account> existingAccount = accountRepository
@@ -48,6 +57,8 @@ public class AccountController {
                     .message("Already account exists for " +
                             accountRequest.getAccountHolderName() + " with mobile : " + accountRequest.getMobile())
                     .build();
+
+
             return ResponseEntity.status(HttpStatus.CREATED).body
                     (accountResponse);
         }
@@ -59,6 +70,11 @@ public class AccountController {
                 .message("Successfully set up a new bank account for " +
                         accountRequest.getAccountHolderName() + ".")
                                             .build();
+
+        // pushing to kafka to create asset of the user
+        String json = objectMapper.writeValueAsString(buildEvent(account, UserEvent.EventType.CREATED));
+        kafkaTemplate.send("user.created", json);  // topic , event
+
 
         return ResponseEntity.status(HttpStatus.CREATED).body
                 (accountResponse);
@@ -88,11 +104,39 @@ public class AccountController {
     @Operation(summary="return A ResponseEntity with a success message and HTTP status code 200 if the account was deleted")
     public ResponseEntity<String> deleteAccount(@RequestBody AccountRequest accountRequest) {
         try {
-            accountService.deleteAccountByAccountHolderName(accountRequest.getAccountHolderName());
+            Optional<Account> account = accountService.deleteAccountByAccountHolderName(accountRequest.getAccountHolderName());
+
+            if(account.isPresent()) {
+                // pushing to kafka to delete the asset of the user
+                String json = objectMapper.writeValueAsString(buildEvent(account.get(), UserEvent.EventType.DELETED));
+                kafkaTemplate.send("user.deleted", json);  // topic , event
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body("Successfully deleted " +
                     accountRequest.getAccountHolderName() + "'s account.");
-        } catch (RuntimeException runtimeException) {
+        } catch (RuntimeException | JsonProcessingException runtimeException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(runtimeException.getMessage());
         }
+    }
+
+    @DeleteMapping("/all")
+    public String deleteAllAccounts()
+    {
+        accountService.deleteAllAccounts();
+        return "all account deleted !! ";
+    }
+
+
+    // utility function to create event
+    private UserEvent buildEvent(Account acc, UserEvent.EventType type) {
+        return UserEvent.builder()
+                .userId(acc.getId())
+                .accountHolderName(acc.getAccountHolderName())
+                .mobile(acc.getMobile())
+                .email(acc.getEmail())
+                .balance(acc.getBalance())
+                .currency(acc.getCurrency())
+                .type(type)
+                .build();
     }
 }

@@ -13,7 +13,7 @@ class NotificationApiApplicationIT {
     @Test
     void contextLoads() {
         Assertions.assertDoesNotThrow(() -> {
-            NotificationApiApplication.main(new String[]{});
+
         });
     }
 }

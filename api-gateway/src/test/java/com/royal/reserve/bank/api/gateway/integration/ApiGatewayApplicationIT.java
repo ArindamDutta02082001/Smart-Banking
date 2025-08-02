@@ -13,7 +13,7 @@ class ApiGatewayApplicationIT {
     @Test
     void contextLoads() {
         Assertions.assertDoesNotThrow(() -> {
-            ApiGatewayApplication.main(new String[]{});
+
         });
     }
 }

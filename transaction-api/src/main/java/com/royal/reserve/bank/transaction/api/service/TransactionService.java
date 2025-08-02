@@ -1,21 +1,28 @@
 package com.royal.reserve.bank.transaction.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.royal.reserve.bank.transaction.api.client.AccountServiceClient;
 import com.royal.reserve.bank.transaction.api.client.AssetManagementClient;
-import com.royal.reserve.bank.transaction.api.dto.AssetManagementResponse;
-import com.royal.reserve.bank.transaction.api.dto.TransactionItemsDto;
+import com.royal.reserve.bank.transaction.api.dto.FeignClientResponse.AccountServiceResponse;
+import com.royal.reserve.bank.transaction.api.dto.FeignClientResponse.Asset;
+import com.royal.reserve.bank.transaction.api.dto.FeignClientResponse.AssetManagementResponse;
 import com.royal.reserve.bank.transaction.api.dto.TransactionRequest;
 import com.royal.reserve.bank.transaction.api.event.TransactionEvent;
 import com.royal.reserve.bank.transaction.api.model.Transaction;
 import com.royal.reserve.bank.transaction.api.model.TransactionItems;
 import com.royal.reserve.bank.transaction.api.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -27,8 +34,16 @@ import java.util.UUID;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+
+    // Fieng client templates
     private final AssetManagementClient assetManagementClient;
-    private final KafkaTemplate<String, TransactionEvent> kafkaTemplate;
+    private final AccountServiceClient accountServiceClient;
+
+    @Autowired
+    private final ObjectMapper objectMapper;
+
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     /**
      *
@@ -38,56 +53,105 @@ public class TransactionService {
      *@throws IllegalArgumentException If any of the requested assets are not available.
      */
     @CacheEvict(value = "assetAvailability", allEntries = true)
-    public String processTransaction(TransactionRequest transactionRequest) {
+    public String processTransaction(TransactionRequest transactionRequest) throws JsonProcessingException {
+
+        // sync get all the users from the user service to check of there exists bth the users
+        String receiverNumber = transactionRequest.getReceiverMob();
+        String senderNumber = transactionRequest.getSenderMob();
+
+        // Step 1: Fetch all users
+        List<AccountServiceResponse> allUsersAccount = accountServiceClient.getAllAccounts();
+
+        System.out.println( "all accnt" + allUsersAccount);
+
+        // Step 2: Extract mobile numbers
+        AccountServiceResponse receiverAccount = allUsersAccount.stream()
+                .filter(e -> {
+                    String mob = e.getAccount().getMobile();
+                    return mob != null && mob.equals(receiverNumber);
+                })
+                .findFirst()
+                .orElse(null);
+
+        AccountServiceResponse senderAccount = allUsersAccount.stream()
+                .filter(e -> {
+                    String mob = e.getAccount().getMobile();
+                    return mob != null && mob.equals(senderNumber);
+                })
+                .findFirst()
+                .orElse(null);
+
+
+        // Step 3: Validate sender and receiver
+        if ( receiverAccount == null && senderAccount == null ) return " Receiver & sender dont have a Smart Bank Account";
+        else if ( senderAccount == null ) return " Sender dont have a Smart Bank Account";
+        else if ( receiverAccount == null ) return " Receiver dont have a Smart Bank Account";
+
+        // validate the sender  assets
+        boolean b = checkAssetAvailability(senderNumber , transactionRequest.getAmount().intValue());
+        if(!b) return "Insufficient fund for the sender";
+
         Transaction transaction = new Transaction();
         transaction.setTransactionId(UUID.randomUUID().toString());
+        transaction.setSenderMob(transactionRequest.getSenderMob());
+        transaction.setReceiverMob(transactionRequest.getReceiverMob());
+        transaction.setSenderName(senderAccount.getAccount().getAccountHolderName());
+        transaction.setReceiverName(receiverAccount.getAccount().getAccountHolderName());
 
-        List<TransactionItems> transactionItems = transactionRequest.getTransactionItemsDtoList()
-                .stream()
-                .map(this::mapToDto)
-                .toList();
+        // 4. Create TransactionItems with amount and purpose
+        TransactionItems item = new TransactionItems();
+        item.setAmt((int) transactionRequest.getAmount().doubleValue());
+        item.setCurrency(transactionRequest.getCurrency());
+        item.setMessage(transactionRequest.getPurpose());
 
-        transaction.setTransactionItemsList(transactionItems);
+        transaction.setTransactionItemsList(List.of(item));
 
-        List<String> assetCodes = transaction.getTransactionItemsList().stream()
-                .map(TransactionItems::getAssetCode)
-                .toList();
+        // 5. Save transaction
+        transactionRepository.save(transaction);
 
-        boolean assetIsAvailable = checkAssetAvailability(assetCodes);
+        // 6. publish the transaction event to the user.transaction topic to be consumed by the asset servcie
+        // creating a transaction event
 
-        if (assetIsAvailable) {
-            transactionRepository.save(transaction);
-            kafkaTemplate.send("notificationTopic", new TransactionEvent(transaction.getTransactionId()));
-            return "Transaction completed successfully!";
-        } else {
-            throw new IllegalArgumentException("Asset is not available, please try again later");
-        }
+        TransactionEvent event = new TransactionEvent(
+                transaction.getTransactionId(),
+                transaction.getSenderName(),
+                transaction.getReceiverName(),
+                transaction.getSenderMob(),
+                transaction.getReceiverMob(),
+                senderAccount.getAccount().getEmail(),
+                receiverAccount.getAccount().getEmail(),
+                transactionRequest.getPurpose(),
+                transactionRequest.getCurrency(),
+                transactionRequest.getAmount().intValue()
+        );
+
+        String json = objectMapper.writeValueAsString(event);
+
+        kafkaTemplate.send("user.transaction", json);
+
+
+        // 8. Send to notification topic
+        String json1 = objectMapper.writeValueAsString(event);
+        kafkaTemplate.send("user.notify", json1);
+
+        return "Transaction is processed ";
+
     }
 
     /**
      * Checks the availability of assets.
-     *
-     * @param assetCodes The list of asset codes to check.
      * @return true if all assets are available, false otherwise.
      */
     @Cacheable("assetAvailability")
-    public boolean checkAssetAvailability(List<String> assetCodes) {
-        return assetManagementClient.checkAssetAvailability(assetCodes)
-                .stream()
-                .allMatch(AssetManagementResponse::isAssetAvailable);
+    public boolean checkAssetAvailability(String mobile, int amount) {
+        Optional<Asset> assetManagementResponse = assetManagementClient.checkAssetAvailability(mobile);
+        return assetManagementResponse.get().getValue() >= amount;
     }
 
-    /**
-     *
-     *Maps the provided transaction items DTO to a TransactionItems object.
-     *@param transactionItemsDto The transaction items DTO to be mapped.
-     *@return The corresponding TransactionItems object.
-     */
-    private TransactionItems mapToDto(TransactionItemsDto transactionItemsDto) {
-        TransactionItems transactionItems = new TransactionItems();
-        transactionItems.setAssetCode(transactionItemsDto.getAssetCode());
-        transactionItems.setAssetName(transactionItemsDto.getAssetName());
-        transactionItems.setValue(transactionItemsDto.getValue());
-        return transactionItems;
+
+    public List<Transaction> getAllTransaction(String senderMobile) {
+        return transactionRepository.findBySenderMob(senderMobile);
     }
+
+
 }

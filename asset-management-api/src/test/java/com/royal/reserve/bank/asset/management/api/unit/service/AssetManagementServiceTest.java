@@ -6,11 +6,13 @@ import com.royal.reserve.bank.asset.management.api.repository.AssetManagementRep
 import com.royal.reserve.bank.asset.management.api.service.AssetManagementService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -24,29 +26,46 @@ class AssetManagementServiceTest {
     @Mock
     private AssetManagementRepository assetManagementRepository;
 
-    /**
-     * Test for the {@link AssetManagementService#isAssetAvailable(List)} method.
-     */
+    @InjectMocks
+    private AssetManagementService assetManagementService;
+
     @Test
-    void testIsAssetAvailable() {
+    void testIsAssetAvailableReturnsAsset() {
         // Given
-        AssetManagementService assetManagementService = new AssetManagementService(assetManagementRepository);
-        List<String> assetCodes = Arrays.asList("387223", "081293");
-        Asset asset1 = new Asset(813L, "387223", "QQQ", 12000);
-        Asset asset2 = new Asset(114L, "081293", "KD", 3000);
-        List<Asset> assets = Arrays.asList(asset1, asset2);
-        when(assetManagementRepository.findByAssetCodeIn(assetCodes)).thenReturn(assets);
+        String mobile = "9999999999";
+
+        Asset asset = Asset.builder()
+                .id(1L)
+                .UserId("user123")
+                .assetCode("ASSET001")
+                .assetName("Digital Coin")
+                .value(5000)
+                .mobile(mobile)
+                .build();
+
+        when(assetManagementRepository.findByMobile(mobile)).thenReturn(Optional.of(asset));
 
         // When
-        List<AssetManagementResponse> response = assetManagementService.isAssetAvailable(assetCodes);
+        Optional<Asset> result = assetManagementService.isAssetAvailable(mobile);
 
         // Then
-        assertEquals(2, response.size());
-        AssetManagementResponse response1 = response.get(0);
-        assertEquals("387223", response1.getAssetCode());
-        assertTrue(response1.isAssetAvailable());
-        AssetManagementResponse response2 = response.get(1);
-        assertEquals("081293", response2.getAssetCode());
-        assertTrue(response2.isAssetAvailable());
+        assertTrue(result.isPresent());
+        assertEquals("ASSET001", result.get().getAssetCode());
+        assertEquals(5000, result.get().getValue());
+        assertEquals("Digital Coin", result.get().getAssetName());
+    }
+
+    @Test
+    void testIsAssetAvailableReturnsEmpty() {
+        // Given
+        String mobile = "unknown-number";
+
+        when(assetManagementRepository.findByMobile(mobile)).thenReturn(Optional.empty());
+
+        // When
+        Optional<Asset> result = assetManagementService.isAssetAvailable(mobile);
+
+        // Then
+        assertTrue(result.isEmpty());
     }
 }

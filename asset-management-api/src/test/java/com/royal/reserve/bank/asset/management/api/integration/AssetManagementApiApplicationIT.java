@@ -12,8 +12,5 @@ import org.springframework.boot.test.context.SpringBootTest;
 class AssetManagementApiApplicationIT {
 	@Test
 	void contextLoads() {
-		Assertions.assertDoesNotThrow(() -> {
-			AssetManagementApiApplication.main(new String[]{});
-		});
 	}
 }

@@ -116,7 +116,7 @@ public class AccountService {
      * @param name The account holder name.
      * @throws NoSuchElementException if the account is not found.
      */
-    public void deleteAccountByAccountHolderName(String name) {
+    public Optional<Account> deleteAccountByAccountHolderName(String name) {
         List<Account> accounts = accountRepository.findAll();
 
         Optional<Account> accountToDelete = accounts.stream()
@@ -126,9 +126,16 @@ public class AccountService {
         if (accountToDelete.isPresent()) {
             accountRepository.delete(accountToDelete.get());
             redisTemplate.delete(CACHE_KEY);
+            return accountToDelete;
         } else {
             throw new NoSuchElementException("The bank account information for "
                     + name + " was not found.");
         }
+    }
+
+
+    // delte all accnts
+    public void deleteAllAccounts() {
+        accountRepository.deleteAll();
     }
 }

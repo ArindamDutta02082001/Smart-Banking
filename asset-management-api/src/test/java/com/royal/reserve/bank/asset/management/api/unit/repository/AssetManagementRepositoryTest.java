@@ -8,12 +8,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for the {@link AssetManagementRepository} class.
+/*
+Unit tests for the {@link AssetManagementRepository} class.
  */
 @ExtendWith(MockitoExtension.class)
 class AssetManagementRepositoryTest {
@@ -22,22 +23,27 @@ class AssetManagementRepositoryTest {
     private AssetManagementRepository assetManagementRepository;
 
     /**
-     * Test for the {@link AssetManagementRepository#findByAssetCodeIn(List)} method.
+     * Test for the {@link AssetManagementRepository#findByMobile(String)} method.
      */
     @Test
-    void testFindByAssetCodeIn() {
+    void testFindByMobile() {
         // Given
-        List<String> assetCodes = Arrays.asList("78231", "24722");
-        List<Asset> expectedAssets = Arrays.asList(
-                new Asset(1L, "78231", "a", 25400),
-                new Asset(2L, "24722", "b", 52000)
-        );
+        String mobile = "9999999999";
+        Asset asset = Asset.builder()
+                .id(1L)
+                .UserId("12345")
+                .assetCode("78231")
+                .assetName("a")
+                .mobile(mobile)
+                .value(25400)
+                .build();
+
+        when(assetManagementRepository.findByMobile(mobile)).thenReturn(Optional.of(asset));
 
         // When
-        when(assetManagementRepository.findByAssetCodeIn(assetCodes)).thenReturn(expectedAssets);
-        List<Asset> actualAssets = assetManagementRepository.findByAssetCodeIn(assetCodes);
+        Optional<Asset> actualAsset = assetManagementRepository.findByMobile(mobile);
 
         // Then
-        assertEquals(expectedAssets, actualAssets);
+        assertEquals(Optional.of(asset), actualAsset);
     }
 }

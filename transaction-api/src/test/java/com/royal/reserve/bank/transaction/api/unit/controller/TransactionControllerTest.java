@@ -1,10 +1,9 @@
 package com.royal.reserve.bank.transaction.api.unit.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.royal.reserve.bank.transaction.api.controller.TransactionController;
-import com.royal.reserve.bank.transaction.api.dto.TransactionItemsDto;
 import com.royal.reserve.bank.transaction.api.dto.TransactionRequest;
 import com.royal.reserve.bank.transaction.api.service.TransactionService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,15 +11,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Currency;
 import java.util.concurrent.CompletableFuture;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for the {@link TransactionController} class.
+ * Unit tests for {@link TransactionController}.
  */
 @ExtendWith(MockitoExtension.class)
 class TransactionControllerTest {
@@ -35,43 +34,43 @@ class TransactionControllerTest {
 
     @BeforeEach
     void setup() {
-        TransactionItemsDto item1 = new TransactionItemsDto(1L, "AAPL", "Apple Inc.",
-                19000);
-        TransactionItemsDto item2 = new TransactionItemsDto(2L, "GOOGL", "Alphabet Inc.",
-                10200);
-        List<TransactionItemsDto> transactionItemList = Arrays.asList(item1, item2);
-        request = new TransactionRequest(transactionItemList);
+        request = new TransactionRequest();
+        request.setSenderMob("9999999999");
+        request.setReceiverMob("8888888888");
+        request.setAmount(5000.0);
+        request.setPurpose("Test payment");
+        request.setCurrency(Currency.getInstance("USD"));
     }
 
     /**
-     * Test for the {@link TransactionController#processTransaction(TransactionRequest)} method.
+     * Test for {@link TransactionController#processTransaction(TransactionRequest)}.
      */
     @Test
-    void testProcessTransaction() {
+    void testProcessTransaction() throws JsonProcessingException {
         // Given
-        String expectedResponse = "Transaction processed.";
+        String expectedResponse = "Transaction is processed";
         when(transactionService.processTransaction(any(TransactionRequest.class))).thenReturn(expectedResponse);
 
         // When
         CompletableFuture<String> result = transactionController.processTransaction(request);
 
         // Then
-        Assertions.assertEquals(expectedResponse, result.join());
+        assertEquals(expectedResponse, result.join());
     }
 
     /**
-     * Test for the {@link TransactionController#fallbackMethod(TransactionRequest, RuntimeException)} method.
+     * Test for {@link TransactionController#fallbackMethod(TransactionRequest, RuntimeException)}.
      */
     @Test
     void testFallbackMethod() {
         // Given
-        RuntimeException exception = new RuntimeException("Error occurred during transaction processing");
-        String expectedFallbackResponse = "Oops! Something went wrong, please try again later!";
+        RuntimeException exception = new RuntimeException("Simulated failure");
+        String expectedFallback = "Oops! Something went wrong, please try again later!";
 
         // When
         CompletableFuture<String> result = transactionController.fallbackMethod(request, exception);
 
         // Then
-        Assertions.assertEquals(expectedFallbackResponse, result.join());
+        assertEquals(expectedFallback, result.join());
     }
 }

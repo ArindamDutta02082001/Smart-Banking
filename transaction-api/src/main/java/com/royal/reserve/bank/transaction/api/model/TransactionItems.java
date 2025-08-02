@@ -7,11 +7,13 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 
+import java.util.Currency;
+
 /**
  * Represents a transaction item.
  */
 @Entity
-@Table(name = "t_transaction_items")
+@Table(name = "transaction_items")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,7 +22,10 @@ public class TransactionItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String assetCode;
-    private String assetName;
-    private int value;
+
+    private String Message;
+
+    private int amt;
+
+    private Currency Currency;
 }

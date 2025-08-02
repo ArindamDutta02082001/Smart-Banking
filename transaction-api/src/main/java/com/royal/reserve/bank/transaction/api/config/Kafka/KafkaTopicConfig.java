@@ -1,0 +1,35 @@
+package com.royal.reserve.bank.transaction.api.config.Kafka;
+
+import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.TopicBuilder;
+
+@Configuration
+public class KafkaTopicConfig {
+
+    @Bean
+    public NewTopic userCreatedTopic() {
+        return TopicBuilder.name("user.transaction")
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic notifyTopic() {
+        return TopicBuilder.name("user.notify")
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
+
+
+}
+
+//to see the events inside a kafka topic
+
+// docker exec -it notification-api-kafka bash
+
+// kafka-console-consumer --bootstrap-server notification-api-kafka:29092 --topic user.transaction --from-beginning
+// kafka-console-consumer --bootstrap-server notification-api-kafka:29092 --topic user.notify --from-beginning
