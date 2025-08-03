@@ -6,7 +6,7 @@ scrape_configs:
   - job_name: 'account-api'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['account-api:8080']
+      - targets: ['192.168.1.100:8001']
         labels:
           application: 'Account-API'
   - job_name: 'transaction-api'
