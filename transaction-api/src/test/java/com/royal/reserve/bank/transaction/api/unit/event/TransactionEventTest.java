@@ -32,7 +32,6 @@ class TransactionEventTest {
         TransactionEvent event = new TransactionEvent(
                 transactionId, senderName, receiverName,
                 senderMob, receiverMob,
-                senderMail, receiverMail,
                 message, currency, amount
         );
 
@@ -42,8 +41,6 @@ class TransactionEventTest {
         Assertions.assertEquals(receiverName, event.getReceiverName());
         Assertions.assertEquals(senderMob, event.getSenderMob());
         Assertions.assertEquals(receiverMob, event.getReceiverMob());
-        Assertions.assertEquals(senderMail, event.getSenderMail());
-        Assertions.assertEquals(receiverMail, event.getReceiverMail());
         Assertions.assertEquals(message, event.getMessage());
         Assertions.assertEquals(currency, event.getCurrency());
         Assertions.assertEquals(amount, event.getAmt());
@@ -74,8 +71,6 @@ class TransactionEventTest {
         event.setReceiverName(receiverName);
         event.setSenderMob(senderMob);
         event.setReceiverMob(receiverMob);
-        event.setSenderMail(senderMail);
-        event.setReceiverMail(receiverMail);
         event.setMessage(message);
         event.setCurrency(currency);
         event.setAmt(amount);
@@ -86,8 +81,6 @@ class TransactionEventTest {
         Assertions.assertEquals(receiverName, event.getReceiverName());
         Assertions.assertEquals(senderMob, event.getSenderMob());
         Assertions.assertEquals(receiverMob, event.getReceiverMob());
-        Assertions.assertEquals(senderMail, event.getSenderMail());
-        Assertions.assertEquals(receiverMail, event.getReceiverMail());
         Assertions.assertEquals(message, event.getMessage());
         Assertions.assertEquals(currency, event.getCurrency());
         Assertions.assertEquals(amount, event.getAmt());

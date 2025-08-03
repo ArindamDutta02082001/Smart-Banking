@@ -1,9 +1,8 @@
-package com.royal.reserve.bank.transaction.api.event;
+package com.royal.reserve.bank.notification.api.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.*;
 
 import java.util.Currency;
 
@@ -13,18 +12,22 @@ import java.util.Currency;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionEvent {
+public class NotifyEvent {
     private String transactionId;
+
     private String senderName;
     private String receiverName;
 
     private String senderMob;
     private String receiverMob;
 
+    private String senderMail;
+    private String receiverMail;
+
     private String Message;
+
     private Currency Currency;
 
     private int amt;
-
 
 }

@@ -40,7 +40,6 @@ public class AssetManagementController {
 
     /**
      * Fetch all assets from the database.
-     *
      * @return List of all assets in the system.
      */
     @GetMapping("/all-assets")

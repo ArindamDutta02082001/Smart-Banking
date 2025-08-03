@@ -56,7 +56,8 @@ class AssetManagementControllerTest {
         // Then
         verify(assetManagementService, times(1)).isAssetAvailable(String.valueOf(8917));
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dummyAsset, response.getBody());
+        assertTrue(response.getBody().isPresent());
+        assertEquals(dummyAsset, response.getBody().get());
     }
 
     /**

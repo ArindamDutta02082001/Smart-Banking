@@ -2,12 +2,10 @@ package com.royal.reserve.bank.notification.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.royal.reserve.bank.notification.api.event.NotifyEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import com.royal.reserve.bank.notification.api.event.TransactionEvent;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.SimpleMailMessage;
@@ -26,17 +24,17 @@ public class EmailNotificationService {
 
     /**
      *This method is a Kafka message listener for the "notificationTopic" topic.
-     *It handles incoming messages and processes the TransactionEvent object.
-     *@param transactionEvent The TransactionEvent object received from the Kafka message.
+     *It handles incoming messages and processes the NotifyEvent object.
+     *@param notifyEvent The NotifyEvent object received from the Kafka message.
      */
 
     @KafkaListener(topics = "user.notify", groupId = "asset-group", containerFactory = "kafkaListenerContainerFactory")
-    public void handleTransactionEvent(String transactionEvent) throws JsonProcessingException {
-        log.info("Received TransactionEvent: {}", transactionEvent);
+    public void handleTransactionEvent(String notifyEvent) throws JsonProcessingException {
+        log.info("Received NotifyEvent: {}", notifyEvent);
 
 
         ObjectMapper mapper = new ObjectMapper();
-        TransactionEvent event = mapper.readValue(transactionEvent, TransactionEvent.class);
+        NotifyEvent event = mapper.readValue(notifyEvent, NotifyEvent.class);
 
         String subject = "SmartBank Transaction Notification";
 

@@ -64,9 +64,3 @@ services:
       POSTGRES_PASSWORD: admin
     volumes:
       - ./data/transaction-api-postgres:/data/postgres
-
-  zipkin:
-    image: openzipkin/zipkin:2.24.0
-    container_name: zipkin
-    ports:
-      - "9411:9411"

@@ -1,16 +1,16 @@
 package com.royal.reserve.bank.notification.api.unit.event;
 
 
-import com.royal.reserve.bank.notification.api.event.TransactionEvent;
+import com.royal.reserve.bank.notification.api.event.NotifyEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Currency;
 
 /**
- * Unit tests for {@link TransactionEvent} class.
+ * Unit tests for {@link NotifyEvent} class.
  */
-class TransactionEventTest {
+class NotifyEventTest {
 
     @Test
     void testTransactionEventFullConstructor() {
@@ -27,7 +27,7 @@ class TransactionEventTest {
         int amt = 100;
 
         // When
-        TransactionEvent event = new TransactionEvent(
+        NotifyEvent event = new NotifyEvent(
                 transactionId, senderName, receiverName,
                 senderMob, receiverMob, senderMail, receiverMail,
                 message, currency, amt

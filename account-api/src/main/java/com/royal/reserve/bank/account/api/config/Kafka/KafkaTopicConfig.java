@@ -30,3 +30,5 @@ public class KafkaTopicConfig {
 // docker exec -it notification-api-kafka bash
 
 // kafka-console-consumer --bootstrap-server notification-api-kafka:29092 --topic user.created --from-beginning
+
+//kafka-console-consumer --bootstrap-server notification-api-kafka:29092 --topic user.deleted --from-beginning

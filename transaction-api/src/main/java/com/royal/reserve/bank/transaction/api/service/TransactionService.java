@@ -8,6 +8,7 @@ import com.royal.reserve.bank.transaction.api.dto.FeignClientResponse.AccountSer
 import com.royal.reserve.bank.transaction.api.dto.FeignClientResponse.Asset;
 import com.royal.reserve.bank.transaction.api.dto.FeignClientResponse.AssetManagementResponse;
 import com.royal.reserve.bank.transaction.api.dto.TransactionRequest;
+import com.royal.reserve.bank.transaction.api.event.NotifyEvent;
 import com.royal.reserve.bank.transaction.api.event.TransactionEvent;
 import com.royal.reserve.bank.transaction.api.model.Transaction;
 import com.royal.reserve.bank.transaction.api.model.TransactionItems;
@@ -118,6 +119,23 @@ public class TransactionService {
                 transaction.getReceiverName(),
                 transaction.getSenderMob(),
                 transaction.getReceiverMob(),
+                transactionRequest.getPurpose(),
+                transactionRequest.getCurrency(),
+                transactionRequest.getAmount().intValue()
+        );
+
+        String json = objectMapper.writeValueAsString(event);
+        kafkaTemplate.send("user.transaction", json);
+
+
+        // 8. Send to notification topic
+
+        NotifyEvent notifyEvent = new NotifyEvent(
+                transaction.getTransactionId(),
+                transaction.getSenderName(),
+                transaction.getReceiverName(),
+                transaction.getSenderMob(),
+                transaction.getReceiverMob(),
                 senderAccount.getAccount().getEmail(),
                 receiverAccount.getAccount().getEmail(),
                 transactionRequest.getPurpose(),
@@ -125,13 +143,7 @@ public class TransactionService {
                 transactionRequest.getAmount().intValue()
         );
 
-        String json = objectMapper.writeValueAsString(event);
-
-        kafkaTemplate.send("user.transaction", json);
-
-
-        // 8. Send to notification topic
-        String json1 = objectMapper.writeValueAsString(event);
+        String json1 = objectMapper.writeValueAsString(notifyEvent);
         kafkaTemplate.send("user.notify", json1);
 
         return "Transaction is processed ";
